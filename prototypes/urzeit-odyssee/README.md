@@ -124,5 +124,17 @@ Bot-Messung (läuft zur nächsten Beute, weicht Gefahren aus, ohne Sprint):
 - Bot-Messung Trias mit Fliehen: fair, aber lang → Ziel 38 → 34.
 - Ladezeit im Test-Browser: Titel nach 2 s, Epochenwechsel danach sofort (Vorbau im Hintergrund).
 
+### Version 3.1: Fossilien
+
+- 5 Fossilien pro Epoche statt 3 (15 insgesamt), neue Fakten aus dem Second Brain
+  (Flaum gegen den Vulkanwinter, Knochen als Thermometer, Luftsäcke, Kulindadromeus,
+  Riechkolben des T. rex, 45-km/h-Fährte).
+- 11 Voxel-Fundarten: Farnabdruck, Zahn, Eier, Federabdruck, Knochen, Wirbel, Kralle,
+  Rückenplatte, Horn, Schädel, Fährte. Jedes auf Steinsockel, schwebend, mit Funken.
+- Leichter zu finden: goldene Lichtsäule (ohne Nebel, von weitem sichtbar), Fundorte im
+  Ring 320–880 um den Start, größerer Aufhebe-Radius, pulsierende Pfeile, Zähler im HUD.
+- Fossilbuch mit gerenderten Bildern (unbekannte Funde als Silhouette), Reiter
+  „Fossilien“ in der Modellansicht.
+
 Noch offen: menschlicher Spieltest am Handy (Spaß, Schwierigkeit, Bildrate) → Urteil
 PROCEED / PIVOT / KILL.

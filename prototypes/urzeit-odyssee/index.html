@@ -121,11 +121,9 @@ h2{font-size:clamp(34px,9vw,46px)}
 
 /* Fossilbuch */
 .book{display:grid;gap:8px;max-height:52vh;overflow-y:auto;padding-right:4px}
-.fossil{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-.fossil .ico{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#f3d9a3,#b98a4a);position:relative}
-.fossil .ico::after{content:"";position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(90,55,20,.6);border-right-color:transparent}
-.fossil.locked .ico{background:rgba(242,234,216,.1)}
-.fossil.locked .ico::after{display:none}
+.fossil{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.fossil img{width:64px;height:64px;border-radius:14px;background:radial-gradient(circle at 50% 42%,rgba(242,165,65,.32),rgba(242,234,216,.05) 70%)}
+.fossil.locked img{filter:brightness(0) opacity(.35);background:rgba(242,234,216,.06)}
 .fossil b{display:block;font-size:15px}
 .fossil small{display:block;font-size:12px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase}
 .fossil span{font-size:14px;color:var(--muted)}
@@ -138,6 +136,8 @@ h2{font-size:clamp(34px,9vw,46px)}
 @keyframes sky{from{opacity:.7}to{opacity:1}}
 #joy{position:fixed;left:0;top:0;z-index:2;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:2px solid rgba(242,234,216,.38);background:rgba(242,234,216,.1);pointer-events:none}
 #joy i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(242,234,216,.5)}
+.arrow.fos{margin:-13px 0 0 -12px;border-left-width:30px;border-top-width:13px;border-bottom-width:13px;animation:fosPulse 1.1s ease-in-out infinite}
+@keyframes fosPulse{0%,100%{opacity:.55}50%{opacity:1}}
 .arrow{position:fixed;left:0;top:0;z-index:2;width:0;height:0;margin:-10px 0 0 -9px;border-left:22px solid currentColor;border-top:10px solid transparent;border-bottom:10px solid transparent;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
 /* Modellansicht */
 .gal #tint,.gal #vignette,.gal #sky,.gal #arrows,.gal #toast,.gal #joy{display:none!important}
@@ -152,7 +152,7 @@ h2{font-size:clamp(34px,9vw,46px)}
 .gtab:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 
 @media (prefers-reduced-motion:reduce){
-  #overlay.show .card,#toast.show,#sky{animation:none}
+  #overlay.show .card,#toast.show,#sky,.arrow.fos{animation:none}
   .bar i{transition:none}
 }
 </style>
@@ -164,7 +164,7 @@ h2{font-size:clamp(34px,9vw,46px)}
 <div id="gallery" hidden>
   <div class="g-head" id="gHead"></div>
   <div id="gLabels"></div>
-  <div class="g-bar"><button class="gtab" data-g="eo">Eoraptor</button><button class="gtab" data-g="hunter">Raubjäger</button><button class="gtab" data-g="food">Futter</button><button class="gtab" data-g="back">Zurück</button></div>
+  <div class="g-bar"><button class="gtab" data-g="eo">Eoraptor</button><button class="gtab" data-g="hunter">Raubjäger</button><button class="gtab" data-g="food">Futter</button><button class="gtab" data-g="fossil">Fossilien</button><button class="gtab" data-g="back">Zurück</button></div>
 </div>
 
 <header id="hud" hidden>
@@ -227,9 +227,11 @@ const ERAS = [
       ['Tiere', 'Die ersten Dinosaurier waren klein, flink und zweibeinig.'],
     ],
     fossils: [
-      { id: 't1', title: 'Welt ohne Blumen', text: 'In der Trias gab es noch keine Blumen und Gräser. Es wuchsen Farne, Ginkgos, Palmfarne und Nadelbäume.' },
-      { id: 't2', title: 'Herrscher Pseudosuchia', text: 'An der Spitze standen nicht die Dinosaurier, sondern krokodilähnliche Archosaurier wie Postosuchus.' },
-      { id: 't3', title: 'Mussaurus-Nester', text: 'In Patagonien fand man an einer Stelle über 100 Eier und rund 80 Tiere von Mussaurus.' },
+      { id: 't1', type: 'leaf', title: 'Welt ohne Blumen', text: 'In der Trias gab es noch keine Blumen und Gräser. Es wuchsen Farne, Ginkgos, Palmfarne und Nadelbäume.' },
+      { id: 't2', type: 'tooth', title: 'Herrscher Pseudosuchia', text: 'An der Spitze standen nicht die Dinosaurier, sondern krokodilähnliche Archosaurier wie Postosuchus.' },
+      { id: 't3', type: 'egg', title: 'Mussaurus-Nester', text: 'In Patagonien fand man an einer Stelle über 100 Eier und rund 80 Tiere von Mussaurus.' },
+      { id: 't4', type: 'feather', title: 'Flaum gegen den Winter', text: 'Isolierende Filamente halfen frühen Dinosauriern vermutlich, die vulkanischen Winter an der Trias-Jura-Grenze zu überstehen.' },
+      { id: 't5', type: 'bone', title: 'Thermometer im Knochen', text: 'Sauerstoff-Isotope im Knochen hängen von der Temperatur ab. So lässt sich die Körpertemperatur von Dinosauriern abschätzen.' },
     ],
     outro: { title: 'Massenaussterben', text: 'Am Ende der Trias sterben viele große Konkurrenten der Dinosaurier aus. Das ist der Startschuss für ihre Herrschaft.', next: 'Weiter in den Jura' },
     species: [
@@ -259,9 +261,11 @@ const ERAS = [
       ['Pflanzen', 'Riesige Wälder aus Nadelbäumen, Farnen und Palmfarnen.'],
     ],
     fossils: [
-      { id: 'j1', title: 'Riesen-Sauropoden', text: 'Langhalsige Sauropoden wie Brachiosaurus und Diplodocus wurden im Jura gigantisch.' },
-      { id: 'j2', title: 'Erste große Räuber', text: 'Mit Allosaurus tauchten im Jura die ersten großen Raubsaurier auf.' },
-      { id: 'j3', title: 'Panzer und Platten', text: 'Gepanzerte Dinosaurier wie Stegosaurus erschienen zum ersten Mal.' },
+      { id: 'j1', type: 'bone', title: 'Riesen-Sauropoden', text: 'Langhalsige Sauropoden wie Brachiosaurus und Diplodocus wurden im Jura gigantisch.' },
+      { id: 'j2', type: 'claw', title: 'Erste große Räuber', text: 'Mit Allosaurus tauchten im Jura die ersten großen Raubsaurier auf.' },
+      { id: 'j3', type: 'plate', title: 'Panzer und Platten', text: 'Gepanzerte Dinosaurier wie Stegosaurus erschienen zum ersten Mal.' },
+      { id: 'j4', type: 'vertebra', title: 'Atmen wie ein Vogel', text: 'Sauropoden besaßen ein vogelähnliches Atmungssystem mit Luftsäcken. Die Luft strömte in einer Richtung durch die Lunge.' },
+      { id: 'j5', type: 'feather', title: 'Schuppen und Flaum', text: 'Kulindadromeus aus dem Mitteljura Sibiriens trug Schuppen und federartige Filamente. Auch Vogelbeckensaurier hatten also Flaum.' },
     ],
     outro: { title: 'Zeitalter der Riesen', text: 'Die Dinosaurier sind so vielfältig und groß wie nie. Als Nächstes kommt die Kreidezeit, die längste Epoche der Dinosaurier.', next: 'Weiter in die Kreidezeit' },
     species: [
@@ -292,9 +296,11 @@ const ERAS = [
       ['Pflanzen', 'Die ersten Blütenpflanzen tauchen auf.'],
     ],
     fossils: [
-      { id: 'k1', title: 'Verheilte Bisse', text: 'Triceratops-Hörner mit verheilten T.-rex-Bissspuren zeigen: Der Triceratops überlebte manche Kämpfe.' },
-      { id: 'k2', title: 'Brütender Citipati', text: 'Ein Citipati wurde auf seinem Gelege versteinert, die befiederten Arme über den Eiern.' },
-      { id: 'k3', title: 'Vogel vor dem Einschlag', text: 'Vegavis lebte vor rund 69 Millionen Jahren in der Antarktis: ein Vogel noch zur Zeit der Dinosaurier.' },
+      { id: 'k1', type: 'horn', title: 'Verheilte Bisse', text: 'Triceratops-Hörner mit verheilten T.-rex-Bissspuren zeigen: Der Triceratops überlebte manche Kämpfe.' },
+      { id: 'k2', type: 'egg', title: 'Brütender Citipati', text: 'Ein Citipati wurde auf seinem Gelege versteinert, die befiederten Arme über den Eiern.' },
+      { id: 'k3', type: 'feather', title: 'Vogel vor dem Einschlag', text: 'Vegavis lebte vor rund 69 Millionen Jahren in der Antarktis: ein Vogel noch zur Zeit der Dinosaurier.' },
+      { id: 'k4', type: 'skull', title: 'Nase eines Jägers', text: 'Tyrannosaurier hatten auffallend große Riechkolben und witterten Beute vermutlich über weite Strecken. Ihre Augen zeigten nach vorn.' },
+      { id: 'k5', type: 'track', title: 'Schnellste Fährte', text: 'In der Inneren Mongolei hinterließ ein mittelgroßer Theropode eine Spur aus der Unterkreide, die auf bis zu etwa 45 km/h schließen lässt.' },
     ],
     outro: { title: 'Vor 66 Millionen Jahren', text: 'Ein Asteroid schlägt ein. Die großen Dinosaurier haben keine Chance. Aber deine Linie hat einen Trumpf.', next: 'Zum Einschlag' },
     species: [
@@ -856,7 +862,27 @@ function foodPrims(type, P) {
   for (let k = 0; k < 4; k++) { const a = k / 4 * TAU + .4; B.push(pE([Math.cos(a) * .22, .25, Math.sin(a) * .22], [.2, .27, .2], (x, y, z, N, ix, iy, iz) => (hashI(ix, iy, iz, 2) > .85 ? shade(P.egg, -.25) : N[1] > .5 ? shade(P.egg, .2) : P.egg))); }
   return { prims: B, v: .06 };
 }
-const fossilGeo = voxGeo([pE([0, 0, 0], [1, 1, .28], (x, y, z) => { const r = Math.hypot(x, y), a = Math.atan2(y, x) / TAU + .5, uu = r * 4.2 - a; return uu - Math.floor(uu) < .3 ? '#8a5a2a' : (r > .9 ? '#c9a46a' : '#ead0a0'); })], .1);
+/* Fossilien: elf Fundarten aus Würfeln (Einheit ~1) */
+const FOSSIL_NAMES = { leaf: 'Farnabdruck', tooth: 'Zahn', egg: 'Eier', feather: 'Federabdruck', bone: 'Knochen', vertebra: 'Wirbel', claw: 'Kralle', plate: 'Rückenplatte', horn: 'Horn', skull: 'Schädel', track: 'Fährte' };
+const STONE = '#bcae90', STONE2 = '#a29478', FB1 = '#dcc79e', FB2 = '#b39a6e', FDARK = '#3a2c20';
+const fbone = (x, y, z, N, ix, iy, iz) => (vnoise(ix / 2, iy / 2, iz / 2, 31) > .62 ? FB2 : FB1);
+const slab = (h, fn) => pB([0, .12, 0], [h[0], .12, h[1]], (x, y, z, N) => (N[1] > .7 ? fn(x, z) : y < .07 ? STONE2 : STONE));
+const FOSSILS = {
+  leaf: () => ({ v: .05, prims: [slab([.8, .6], (x, z) => { const m = z - .12 * x, w = .34 * (1 - Math.abs(x) / .7); if (Math.abs(x) > .66) return STONE; if (Math.abs(m) < .045) return '#4e4a2a'; return Math.abs(m) < w && (((x * 9) % 1 + 1) % 1) < .5 ? '#6f7a3e' : STONE; })] }),
+  feather: () => ({ v: .05, prims: [slab([.8, .6], (x, z) => { const zz = z - .08 * Math.sin(x * 3), w = .24 * (1 - Math.abs(x - .05) / .65); if (Math.abs(x) > .66) return STONE; if (Math.abs(zz) < .035) return '#4a4236'; return Math.abs(zz) < w && (((x * 11 + Math.abs(zz) * 9) % 1 + 1) % 1) < .55 ? '#6e665a' : (Math.abs(zz) < w ? '#8f877a' : STONE); })] }),
+  track: () => ({ v: .05, prims: [slab([.85, .7], (x, z) => { const heel = Math.hypot(x + .28, z) < .16, toe = (tx, tz) => { const L = Math.hypot(tx + .2, tz), t = clamp(((x + .2) * (tx + .2) + z * tz) / (L * L), 0, 1); return Math.hypot(x + .2 - (tx + .2) * t, z - tz * t) < .075; }; return heel || toe(.32, -.3) || toe(.45, 0) || toe(.32, .3) ? '#6a5a44' : STONE; })] }),
+  egg: () => ({ v: .05, prims: [pE([0, .08, 0], [.78, .11, .62], STONE2), ...[[-.25, -.12, .3], [.22, -.18, -.4], [.02, .24, .1]].map(([x, z, r]) => pE([x, .2, z], [.24, .19, .19], (xx, y, zz, N, ix, iy, iz) => (hashI(ix, iy, iz, 5) > .86 ? '#8e7e60' : '#d2c4a2'), [0, r, .2]))] }),
+  bone: () => ({ v: .05, prims: [pC([-.6, .18, 0], [.6, .18, 0], .1, .12, fbone), pE([-.7, .22, -.09], [.15, .15, .15], fbone), pE([-.7, .22, .09], [.15, .15, .15], fbone), pE([.7, .2, 0], [.17, .15, .21], fbone)] }),
+  vertebra: () => ({ v: .045, prims: [pC([0, .25, -.2], [0, .25, .2], .25, .25, (x, y, z, N, ix, iy, iz) => (Math.abs(x) > .14 && Math.hypot(y - .25, z) < .1 ? FDARK : fbone(x, y, z, N, ix, iy, iz))), pB([0, .66, 0], [.08, .3, .07], fbone), pC([0, .42, 0], [-.48, .46, 0], .08, .05, fbone), pC([0, .42, 0], [.48, .46, 0], .08, .05, fbone), pB([0, .5, .1], [.06, .06, .06], FDARK)] }),
+  claw: () => { const pts = [[-.38, .14], [-.08, .38], [.24, .44], [.5, .3], [.62, .1]], r = [.16, .13, .1, .065, .035], B = []; for (let i = 0; i < 4; i++) B.push(pC([pts[i][0], pts[i][1], 0], [pts[i + 1][0], pts[i + 1][1], 0], r[i], r[i + 1], i < 1 ? '#7a5a3e' : '#4a3426')); return { v: .045, prims: B }; },
+  plate: () => ({ v: .045, prims: [pE([0, .55, 0], [.48, .55, .07], (x, y, z, N, ix, iy) => (Math.abs(N[0]) > .85 || N[1] > .9 ? '#7a5a30' : (iy % 3 === 0 ? '#9a7642' : '#c49c60'))), pB([0, .05, 0], [.3, .05, .1], STONE2)] }),
+  horn: () => ({ v: .045, prims: [pK([-.5, .15, 0], [1, .5, 0], .22, 1.2, (x, y, z, N, ix, iy, iz) => (NN.t > .25 && NN.t < .7 && hashI(ix, iy, iz, 9) > .9 ? FDARK : NN.t > .7 ? '#e6d4ac' : NN.t < .15 ? '#9a805a' : FB1))] }),
+  skull: () => { const B = [pB([-.15, .4, 0], [.3, .24, .22], fbone), pB([.38, .32, 0], [.32, .16, .16], fbone), pB([.2, .12, 0], [.46, .06, .15], FB2)]; for (const sd of [-1, 1]) B.push(pB([-.1, .46, sd * .21], [.09, .09, .03], FDARK), pB([.2, .36, sd * .155], [.1, .07, .03], FDARK), pB([.62, .38, sd * .155], [.045, .045, .03], FDARK)); for (let x = .12; x < .66; x += .09) for (const sd of [-1, 1]) B.push(pB([x, .17, sd * .13], [.03, .04, .03], '#f2e8cc')); return { v: .045, prims: B }; },
+  tooth: () => ({ v: .04, prims: [pC([0, .04, 0], [.05, .42, 0], .17, .12, (x, y) => (y < .16 ? '#7a5a3e' : '#ece0c0')), pC([.05, .42, 0], [.18, .82, 0], .12, .04, (x, y, z, N, ix, iy) => (N[0] > .7 && (iy & 1) ? '#c9b994' : '#ece0c0'))] }),
+};
+const fossilGeoCache = {};
+function getFossilGeo(type) { if (!fossilGeoCache[type]) { const d = FOSSILS[type](); fossilGeoCache[type] = voxGeo(d.prims, d.v); } return fossilGeoCache[type]; }
+const FOSSIL_BASE = voxGeo([pE([0, .1, 0], [.9, .32, .75], (x, y, z, N, ix, iy, iz) => (vnoise(ix / 2, iy / 2, iz / 2, 21) > .55 ? '#8a7c66' : '#a3957c'))], .1);
 const seedGeo = voxGeo([0, 1, 2].map(k => pE([Math.cos(k * 2.1) * .35, .22, Math.sin(k * 2.1) * .35], [.35, .22, .25], k === 1 ? '#d2a85e' : '#e2bd72')), .12);
 
 /* =====================================================================
@@ -905,8 +931,11 @@ function canvasTex(px, draw) { const c = document.createElement('canvas'); c.wid
 const glowTex = canvasTex(64, (g, p) => { const gr = g.createRadialGradient(p / 2, p / 2, 0, p / 2, p / 2, p / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, p, p); });
 const dotTex = canvasTex(32, (g, p) => { g.fillStyle = '#fff'; g.beginPath(); g.arc(p / 2, p / 2, p / 2 - 1, 0, TAU); g.fill(); });
 const glowMat = (c, o = 1) => new THREE.SpriteMaterial({ map: glowTex, color: col(c), transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false });
-const matFossilGlow = glowMat('#ffb347', .9), matSeedGlow = glowMat('#ffd98a', .55), matFruitGlow = glowMat('#ffb23c', .75), matMeteorGlow = glowMat('#ff8a3c'), matTrail = glowMat('#ff6a2a', .6);
+const matSpark = glowMat('#fff2c0', .95), matFossilGlow = glowMat('#ffb347', .9), matSeedGlow = glowMat('#ffd98a', .55), matFruitGlow = glowMat('#ffb23c', .75), matMeteorGlow = glowMat('#ff8a3c'), matTrail = glowMat('#ff6a2a', .6);
 
+const beamTex = canvasTex(64, (g, p) => { const gr = g.createLinearGradient(0, 0, 0, p); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.55, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,1)'); g.fillStyle = gr; g.fillRect(0, 0, p, p); });
+const matBeam = new THREE.MeshBasicMaterial({ map: beamTex, color: col('#ffcf6a'), transparent: true, opacity: .4, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false });
+const BEAM_GEO = new THREE.CylinderGeometry(1, 1, 1, 18, 1, true).translate(0, .5, 0);
 function mergePlain(geos) {
   let n = 0; geos.forEach(g => { n += g.attributes.position.array.length; });
   const pos = new Float32Array(n); let o = 0;
@@ -1126,6 +1155,7 @@ function clearWorld() {
   for (const b of world.batches) b.detach();
   for (const t in world.food) { const set = world.food[t]; scene.remove(set.mesh); for (const it of set.items) if (it.glow) scene.remove(it.glow); set.items.length = 0; set.dirty = true; }
   for (const o of [...world.fossils, ...world.seeds]) if (o.mesh) scene.remove(o.mesh);
+  for (const f of world.fossils) { f.beam.material.dispose(); f.glow.material.dispose(); }
   for (const o of world.craters) scene.remove(o);
   if (F) for (const m of F.meteors) removeMeteor(m);
   scene.remove(world.group);
@@ -1160,17 +1190,24 @@ function buildWorld(i) {
     const small = E.species.find(sp => sp.diet !== 'bug' && sp.size <= 9);
     if (small) world.creatures.filter(c => c.sp === small).slice(0, 3).forEach((c, k) => place(c, k + 4));
   }
-  for (const f of E.fossils) {
+  // Fossilien im Ring um den Start verteilen, jedes mit Steinsockel, Lichtsäule und Funken
+  const ang0 = R() * TAU;
+  E.fossils.forEach((f, k) => {
     let x, y;
-    for (let k = 0; k < 40; k++) {
-      x = 200 + R() * (WORLD - 400); y = 200 + R() * (WORLD - 400);
-      if (Math.hypot(x - WORLD / 2, y - WORLD / 2) > 650 && world.fossils.every(o => Math.hypot(o.x - x, o.y - y) > 700)) break;
+    for (let tries = 0; tries < 60; tries++) {
+      const a = ang0 + k * TAU / E.fossils.length + (R() - .5) * .9, d = 320 + R() * 560;
+      x = clamp(WORLD / 2 + Math.cos(a) * d, 150, WORLD - 150); y = clamp(WORLD / 2 + Math.sin(a) * d, 150, WORLD - 150);
+      if (world.fossils.every(o => Math.hypot(o.x - x, o.y - y) > 380)) break;
     }
-    const mesh = new THREE.Group(), am = new THREE.Mesh(fossilGeo, matC); am.scale.setScalar(12); am.castShadow = true;
-    const glow = new THREE.Sprite(matFossilGlow); glow.scale.setScalar(90);
-    mesh.add(glow, am); mesh.position.set(x, 20, y); scene.add(mesh);
-    world.fossils.push({ ...f, x, y, got: false, mesh, am });
-  }
+    const mesh = new THREE.Group(), base = new THREE.Mesh(FOSSIL_BASE, matC), model = new THREE.Mesh(getFossilGeo(f.type), matC);
+    base.scale.setScalar(15); base.castShadow = base.receiveShadow = true;
+    model.scale.setScalar(20); model.position.y = 26; model.castShadow = true;
+    const beam = new THREE.Mesh(BEAM_GEO, matBeam.clone()); beam.scale.set(9, 340, 9);
+    const glow = new THREE.Sprite(matFossilGlow.clone()); glow.scale.setScalar(115); glow.position.y = 30;
+    const sparks = [0, 1, 2].map(() => { const sp = new THREE.Sprite(matSpark); sp.scale.setScalar(9); mesh.add(sp); return sp; });
+    mesh.add(base, model, beam, glow); mesh.position.set(x, 0, y); scene.add(mesh);
+    world.fossils.push({ ...f, x, y, got: false, mesh, model, beam, glow, sparks, t0: -1 });
+  });
   partsN = 0;
 }
 
@@ -1350,12 +1387,12 @@ function interact() {
     for (let i = items.length - 1; i >= 0; i--) { const it = items[i]; if (Math.hypot(it.x - p.x, it.y - p.y) < p.s * .9 + it.s * .6) eatFood(it); }
   }
   for (const f of world.fossils) {
-    if (f.got || Math.hypot(f.x - p.x, f.y - p.y) > p.s + 26) continue;
-    f.got = true; scene.remove(f.mesh); game.found.add(f.id); game.score += 100; Sfx.fossil();
-    burst(f.x, f.y, '#ffd27a', 18, 140, 20);
+    if (f.got || Math.hypot(f.x - p.x, f.y - p.y) > p.s + 42) continue;
+    f.got = true; f.t0 = game.time; game.found.add(f.id); game.score += 100; Sfx.fossil();
+    burst(f.x, f.y, '#ffd27a', 26, 160, 26); burst(f.x, f.y, '#fff2c0', 12, 90, 40);
     const isNew = !store.fossils.includes(f.id);
     if (isNew) { store.fossils.push(f.id); save(); }
-    toast(isNew ? `Neu im Fossilbuch: ${f.title}` : `Fossil: ${f.title}`, f.text);
+    toast(`${isNew ? 'Neu im Fossilbuch' : 'Fossil'}: ${FOSSIL_NAMES[f.type]} · ${f.title}`, f.text);
   }
 }
 
@@ -1551,7 +1588,18 @@ function render3D() {
       m.count = n; m.instanceMatrix.needsUpdate = true;
     }
   }
-  for (const f of world.fossils) { f.am.rotation.y = t * 1.2; f.mesh.position.y = 20 + Math.sin(t * 2 + f.x) * 3; }
+  for (const f of world.fossils) {
+    if (f.t0 >= 0) {
+      const k = clamp((t - f.t0) / .8, 0, 1);
+      f.model.position.y = 26 + k * 70; f.model.scale.setScalar(20 * (1 + k * .6)); f.model.rotation.y += .25;
+      f.beam.material.opacity = .45 * (1 - k); f.glow.material.opacity = .9 * (1 - k); f.glow.scale.setScalar(115 * (1 + k * 1.5));
+      if (k >= 1 && f.mesh.parent) scene.remove(f.mesh);
+      continue;
+    }
+    f.model.rotation.y = t * 1.1 + f.x; f.model.position.y = 26 + Math.sin(t * 2 + f.x) * 4;
+    f.beam.material.opacity = .3 + .14 * Math.sin(t * 3 + f.y);
+    f.sparks.forEach((sp, i) => { const a = t * 1.6 + i * TAU / 3; sp.position.set(Math.cos(a) * 26, 26 + Math.sin(t * 3 + i) * 12, Math.sin(a) * 26); });
+  }
   for (const s of world.seeds) s.mesh.children[1].material.opacity = .45 + .15 * Math.sin(t * 4 + s.ph);
   // Spieler
   if (player && game.mode !== 'title') {
@@ -1597,16 +1645,17 @@ function updateOverlay() {
   else if (dom.flash.style.opacity !== '0') dom.flash.style.opacity = '0';
   let n = 0;
   if (player && (game.mode === 'play' || game.mode === 'paused')) {
-    for (const f of world.fossils) if (!f.got && n < 8) n = placeArrow(n, f.x, f.y, '#ffc85f');
-    for (const c of world.creatures) if (c.state === 'chase' && n < 8) n = placeArrow(n, c.x, c.y, '#ff6150');
+    for (const f of world.fossils) if (!f.got && n < 8) n = placeArrow(n, f.x, f.y, '#ffc85f', true);
+    for (const c of world.creatures) if (c.state === 'chase' && n < 8) n = placeArrow(n, c.x, c.y, '#ff6150', false);
   }
   for (let i = n; i < 8; i++) if (!arrowEls[i].hidden) arrowEls[i].hidden = true;
 }
-function placeArrow(n, x, y, c) {
+function placeArrow(n, x, y, c, fos) {
   let [sx, sy, sz] = screenOf(x, y, 10); const m = 34, top = 110;
   if (sz < 1 && sx > m && sx < W - m && sy > top && sy < H - m) return n;
   if (sz > 1) { sx = W - sx; sy = H - sy; }
   const a = Math.atan2(sy - H / 2, sx - W / 2), ax = clamp(sx, m, W - m), ay = clamp(sy, top, H - m), el = arrowEls[n];
+  const cls = fos ? 'arrow fos' : 'arrow'; if (el.className !== cls) el.className = cls;
   el.hidden = false; el.style.color = c; el.style.transform = `translate(${ax.toFixed(1)}px,${ay.toFixed(1)}px) rotate(${a.toFixed(3)}rad)`;
   return n + 1;
 }
@@ -1662,6 +1711,10 @@ function buildGallery() {
     const root = new THREE.Group(); root.add(mesh); root.scale.setScalar(sc); return { r: { root, parts: [], M: { height: 1.2 } }, label, below: true, spin: true, food: true };
   });
   tabs.food = { head: 'FUTTER-RESSOURCEN', items: foodItems };
+  tabs.fossil = { head: 'FOSSILIEN', items: Object.keys(FOSSIL_NAMES).map(type => {
+    const mesh = new THREE.Mesh(getFossilGeo(type), matG); mesh.castShadow = mesh.receiveShadow = true;
+    const root = new THREE.Group(); root.add(mesh); root.scale.setScalar(1.5); return { r: { root, parts: [], M: { height: 1 } }, label: FOSSIL_NAMES[type].toUpperCase(), below: true, spin: true, food: true };
+  }) };
   for (const k in tabs) { tabs[k].group = new THREE.Group(); tabs[k].items.forEach(it => tabs[k].group.add(it.r.root)); }
   gal = { scene: gs, cam: gcam, tabs, light: gl, labels: [] };
 }
@@ -1671,6 +1724,7 @@ function layoutGallery() {
   let cols = portrait ? 2 : n, gapX = 0;
   if (game.galleryTab === 'hunter') cols = portrait ? 1 : 3;
   if (game.galleryTab === 'food' && portrait) cols = 2;
+  if (game.galleryTab === 'fossil') cols = portrait ? 3 : 6;
   const sizes = items.map(it => new THREE.Box3().setFromObject(it.r.root).getSize(new THREE.Vector3()));
   const main = items.filter(it => !it.small);
   const cw = Math.max(...main.map(it => sizes[items.indexOf(it)].x), 1) + .35, rows = Math.ceil(main.length / cols), rd = (portrait ? 6 : 4.2) + (game.galleryTab === 'hunter' ? 2.2 : 0);
@@ -1742,7 +1796,7 @@ function updateHud() {
     const low = F.energy < .25; if (hudCache.low !== low) { hudCache.low = low; dom.barWrap.classList.toggle('low', low); }
   } else {
     setText('#hudClock', `vor ${Math.round(lerp(E.from, E.to, pr))} Mio. J.`);
-    setText('#hudPct', `${Math.round(pr * 100)} %`);
+    setText('#hudPct', `Fossilien ${game.found.size}/${E.fossils.length} · ${Math.round(pr * 100)} %`);
     setStyle('bar', dom.bar, 'width', `${(pr * 100).toFixed(1)}%`);
   }
 }
@@ -1793,7 +1847,7 @@ function showIntro() {
     <p class="lead">${E.lead}</p>
     <ul class="facts">${E.intro.map(([k, v]) => `<li><b>${k}</b><span>${v}</span></li>`).join('')}</ul>
     ${E.finale ? `<p class="hint">Rote Kreise zeigen, wo es gleich einschlägt. Überlebe ${CONFIG.finaleTime} Sekunden.</p>`
-      : '<div class="legend"><span class="lg ok">fressbar</span><span class="lg food">Farn, Beeren, Fleisch, Urzeitfrucht, Gelege</span><span class="lg bad">gefährlich</span><span class="lg fos">Fossil (3 pro Epoche)</span></div>'}
+      : `<div class="legend"><span class="lg ok">fressbar</span><span class="lg food">Farn, Beeren, Fleisch, Urzeitfrucht, Gelege</span><span class="lg bad">gefährlich</span><span class="lg fos">Fossil (${E.fossils.length} pro Epoche, goldene Lichtsäule)</span></div>`}
     <div class="row"><button class="btn primary" data-act="go">Los</button></div>
   `);
 }
@@ -1810,10 +1864,29 @@ function showPause() {
     </div>
   `);
 }
+const thumbCache = {}, matThumb = new THREE.MeshLambertMaterial({ vertexColors: true });
+// Kleines Bild eines Fossils für das Fossilbuch (einmal gerendert, dann zwischengespeichert)
+function fossilThumb(type) {
+  if (thumbCache[type]) return thumbCache[type];
+  const S = 160, rt = new THREE.WebGLRenderTarget(S, S); rt.texture.encoding = THREE.sRGBEncoding;
+  const ts = new THREE.Scene(), dl = new THREE.DirectionalLight(col('#ffffff'), .75); dl.position.set(-2, 3, 2);
+  ts.add(new THREE.HemisphereLight(col('#ffffff'), col('#8a8070'), .8), dl);
+  const mesh = new THREE.Mesh(getFossilGeo(type), matThumb); mesh.rotation.y = -.5; ts.add(mesh);
+  const box = new THREE.Box3().setFromObject(mesh), c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() * .5;
+  const cam = new THREE.PerspectiveCamera(30, 1, .01, 50); cam.position.set(c.x + r * .9, c.y + r * 1.7, c.z + r * 2.9); cam.lookAt(c);
+  const oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(ts, cam);
+  const px = new Uint8Array(S * S * 4); renderer.readRenderTargetPixels(rt, 0, 0, S, S, px);
+  renderer.setRenderTarget(null); renderer.setClearColor(oc, oa); rt.dispose();
+  const cv = document.createElement('canvas'); cv.width = cv.height = S; const g = cv.getContext('2d'), img = g.createImageData(S, S);
+  for (let y = 0; y < S; y++) img.data.set(px.subarray((S - 1 - y) * S * 4, (S - y) * S * 4), y * S * 4);
+  g.putImageData(img, 0, 0);
+  return (thumbCache[type] = cv.toDataURL());
+}
 function showBook() {
   const items = ALL_FOSSILS.map(f => {
     const got = store.fossils.includes(f.id);
-    return `<div class="fossil ${got ? '' : 'locked'}"><div class="ico"></div><div><small>${f.era}</small><b>${got ? f.title : 'Noch nicht gefunden'}</b><span>${got ? f.text : 'Suche die leuchtenden Ammoniten. Goldene Pfeile am Rand zeigen den Weg.'}</span></div></div>`;
+    return `<div class="fossil ${got ? '' : 'locked'}"><img src="${fossilThumb(f.type)}" alt="${FOSSIL_NAMES[f.type]}"><div><small>${f.era} · ${FOSSIL_NAMES[f.type]}</small><b>${got ? f.title : 'Noch nicht gefunden'}</b><span>${got ? f.text : 'Folge den goldenen Lichtsäulen und Pfeilen.'}</span></div></div>`;
   }).join('');
   card(`
     <p class="eyebrow">Fossilbuch · ${store.fossils.length} von ${ALL_FOSSILS.length}</p>
@@ -1854,7 +1927,7 @@ function eraDone() {
     <p class="eyebrow">${E.name} geschafft · vor ${E.to} Mio. Jahren</p>
     <h2>${E.outro.title}</h2>
     <p>${E.outro.text}</p>
-    <div class="stats">${stat(game.score, 'Punkte')}${stat(`${game.found.size}/3`, 'Fossilien')}${stat(Math.round(player.targetS), 'Größe')}</div>
+    <div class="stats">${stat(game.score, 'Punkte')}${stat(`${game.found.size}/${E.fossils.length}`, 'Fossilien')}${stat(Math.round(player.targetS), 'Größe')}</div>
     <div class="row"><button class="btn primary" data-act="next">${E.outro.next}</button></div>
   `);
 }
