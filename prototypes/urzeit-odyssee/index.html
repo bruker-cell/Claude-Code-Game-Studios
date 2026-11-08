@@ -202,7 +202,7 @@ const CONFIG = {
   playerSpeed: 150,
   dashMult: 2.2, dashTime: 0.3, dashCooldown: 2.0,
   chaseMax: 4.5, chaseRest: 2.5,   // Räuber geben nach 4,5 s Jagd kurz auf
-  viewBase: 245, viewGrow: 0.6,    // sichtbarer Ausschnitt und wie stark er mitwächst
+  viewBase: 225, viewGrow: 0.6,    // sichtbarer Ausschnitt und wie stark er mitwächst
   finaleTime: 45, finaleDrain: 0.05, seedEnergy: 0.2,
   hunterSpeed: 0.93,  // Jäger laufen höchstens 93 % deines Tempos
   camPitch: 47, camFov: 38,           // Kamerawinkel von oben und Bildwinkel in Grad
@@ -348,11 +348,11 @@ if (!window.THREE) {
 
 /* Futter, das still liegt. ratio = Nährwert wie Beute mit diesem Anteil deiner Größe, n = Anzahl pro Epoche, s = Größe in der Welt */
 const FOOD = {
-  fern:  { name: 'Farn', ratio: .32, n: 22, s: 15 },
-  berry: { name: 'Beeren', ratio: .4, n: 16, s: 14 },
-  meat:  { name: 'Rohes Fleisch', ratio: .6, n: 10, s: 11 },
-  fruit: { name: 'Urzeitfrucht', ratio: .8, n: 4, s: 10 },
-  nest:  { name: 'Gelege', ratio: .42, n: 10, s: 13 },
+  fern:  { name: 'Farn', ratio: .32, n: 30, s: 15 },
+  berry: { name: 'Beeren', ratio: .4, n: 22, s: 14 },
+  meat:  { name: 'Rohes Fleisch', ratio: .6, n: 13, s: 11 },
+  fruit: { name: 'Urzeitfrucht', ratio: .8, n: 5, s: 10 },
+  nest:  { name: 'Gelege', ratio: .42, n: 13, s: 13 },
 };
 
 /* Körperbau der Vierbeiner. Einheit = Größe des Tiers. x = vorne, y = oben. */
@@ -1152,7 +1152,14 @@ function buildWorld(i) {
   for (const t in world.food) scene.add(world.food[t].mesh);
   setEraLook(E);
   for (const sp of E.species) for (let k = 0; k < sp.n; k++) spawnCreature(sp, true);
-  if (!E.finale) for (const [type, F_] of Object.entries(FOOD)) for (let k = 0; k < F_.n; k++) spawnFood(type, true);
+  if (!E.finale) {
+    for (const [type, F_] of Object.entries(FOOD)) for (let k = 0; k < F_.n; k++) spawnFood(type, true);
+    // Ein guter Start: etwas Futter und kleine Beute in der Nähe
+    const place = (o, k) => { const a = k * 1.9 + .5, r = 150 + k * 40; o.x = WORLD / 2 + Math.cos(a) * r; o.y = WORLD / 2 + Math.sin(a) * r; if (o.glow) o.glow.position.set(o.x, 6, o.y); };
+    ['fern', 'berry', 'fern', 'meat'].forEach((type, k) => { const items = world.food[type].items; place(items[items.length - 1 - (k === 2 ? 1 : 0)], k); });
+    const small = E.species.find(sp => sp.diet !== 'bug' && sp.size <= 9);
+    if (small) world.creatures.filter(c => c.sp === small).slice(0, 3).forEach((c, k) => place(c, k + 4));
+  }
   for (const f of E.fossils) {
     let x, y;
     for (let k = 0; k < 40; k++) {
@@ -1682,7 +1689,8 @@ function fitGallery() {
   let d = 6;
   for (; d < 120; d *= 1.04) {
     cam.position.set(c.x, c.y + Math.sin(elev) * d, c.z + Math.cos(elev) * d); cam.lookAt(c.x, c.y * .8, c.z); cam.updateMatrixWorld();
-    if (pts.every(p => { const q = p.clone().project(cam); return Math.abs(q.x) < .86 && q.y < .62 && q.y > -.66; })) break;
+    const top = gal.portrait ? .72 : .66, bot = gal.portrait ? -.7 : -.72;
+    if (pts.every(p => { const q = p.clone().project(cam); return Math.abs(q.x) < .93 && q.y < top && q.y > bot; })) break;
   }
   gal.light.position.set(c.x - 10, 18, c.z + 14); gal.light.target.position.copy(c);
   // Beschriftungen

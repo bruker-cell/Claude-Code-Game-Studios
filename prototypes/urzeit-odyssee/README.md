@@ -36,7 +36,7 @@ und Kreide nach oben — und überlebe den Asteroiden als kleiner Vogel.
 
 ### Out of scope
 - Kein Mehrspieler, keine Accounts, kein Server
-- Keine Grafik-Assets: alle 3D-Modelle werden im Code aus Grundformen gebaut
+- Keine Grafik-Assets: alle Voxel-Modelle werden im Code aus Grundformen gebaut
 - Keine Meta-Progression (Upgrades, Shop)
 - Keine Musik, nur kurze synthetische Effekte
 
@@ -73,7 +73,7 @@ Epochen-Notizen, „Jäger und Räuber“, „Fortpflanzung, Eier und Brutpflege
 
 ## Findings
 
-Screenshots im Ordner `evidence/` (iPhone-13-Ansicht: Titel, Kreide, Finale).
+Screenshots im Ordner `evidence/` (iPhone-13-Ansicht: Titel, alle Epochen, Finale, Modellansicht).
 
 Bot-Messung (läuft zur nächsten Beute, weicht Gefahren aus, ohne Sprint):
 
@@ -104,6 +104,25 @@ Bot-Messung (läuft zur nächsten Beute, weicht Gefahren aus, ohne Sprint):
   Schatten, dann die Auflösung herunter.
 - Gefundener Fehler: Die Spielfigur hatte kein `speed` in den Daten → Animation rechnete
   mit NaN, Figur unsichtbar. Behoben mit Rückfall auf `CONFIG.playerSpeed`.
+
+### Version 3: Voxel-Stil nach Referenzbildern
+
+- Alle Tiere, Pflanzen und das Futter bestehen aus Würfeln: Grundformen (Ellipsoid, Kapsel,
+  Kegel, Quader) werden in ein Gitter zerlegt, gleichfarbige Flächen zusammengefasst
+  (greedy meshing). Muster wie Flecken, Bauch und Rückenstreifen entstehen pro Würfel.
+- Eoraptor (Spieler) nach Referenz: grün mit braunen Flecken, beiger Bauch, S-Hals.
+- Raubjäger nach Referenz als Carnotaurus in der Kreide (Hörner, offenes Maul, Zähne).
+  Herrerasaurus in der Trias im gleichen Jäger-Bau, ohne Hörner, Größe 40 statt 28.
+- Futter nach Referenz: Farn, Beeren, rohes Fleisch, Urzeitfrucht, dazu Gelege.
+  Etwas Futter und kleine Beute liegen am Start in der Nähe.
+- Modellansicht im Titel: Eoraptor in Seite/Vorne/Hinten/3D, Raubjäger mit
+  Maßstab zum Eoraptor, Futter-Übersicht.
+- Leistung: Jede Tierart wird als ein Bündel (InstancedMesh) gezeichnet, Pflanzen und
+  Futter nur, wenn sie im Bild sind. Ergebnis: 27–61 Zeichenaufrufe und
+  57.000–200.000 Dreiecke pro Bild statt bis zu 700.000. Effekte (Blitz, Vignette,
+  Joystick, Pfeile) sind HTML-Ebenen statt einer zweiten Zeichenfläche.
+- Bot-Messung Trias mit Fliehen: fair, aber lang → Ziel 38 → 34.
+- Ladezeit im Test-Browser: Titel nach 2 s, Epochenwechsel danach sofort (Vorbau im Hintergrund).
 
 Noch offen: menschlicher Spieltest am Handy (Spaß, Schwierigkeit, Bildrate) → Urteil
 PROCEED / PIVOT / KILL.
