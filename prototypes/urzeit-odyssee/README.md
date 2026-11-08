@@ -6,9 +6,8 @@ die Geschichte abschließt.
 
 **Status:** in Arbeit (Konzept-Prototyp, `modes.rigor: minimal`).
 
-**Starten:** `index.html` im Browser öffnen. Keine Abhängigkeiten außer Google Fonts
-(fällt ohne Netz auf Systemschriften zurück). Die Datei ist zugleich als claude.ai-Artifact
-veröffentlicht.
+**Starten:** `index.html` im Browser öffnen (mit Internet: Three.js r128 kommt von cdnjs,
+Schriften von Google Fonts). Die Datei ist zugleich als claude.ai-Artifact veröffentlicht.
 
 ---
 
@@ -37,7 +36,7 @@ und Kreide nach oben — und überlebe den Asteroiden als kleiner Vogel.
 
 ### Out of scope
 - Kein Mehrspieler, keine Accounts, kein Server
-- Keine Grafik-Assets: alles wird im Code gezeichnet
+- Keine Grafik-Assets: alle 3D-Modelle werden im Code aus Grundformen gebaut
 - Keine Meta-Progression (Upgrades, Shop)
 - Keine Musik, nur kurze synthetische Effekte
 
@@ -91,5 +90,20 @@ Bot-Messung (läuft zur nächsten Beute, weicht Gefahren aus, ohne Sprint):
 - Jura war am Anfang zäh → kleines Säugetier *Fruitafossor* als leichte Beute ergänzt.
 - Finale etwas entschärft (längere Vorwarnung, etwas kleinere Einschläge).
 
-Noch offen: menschlicher Spieltest am Handy (Spaß, Schwierigkeit) → Urteil
+### Version 2: 3D (nach Wunsch des Spielers)
+
+- Grafik von 2D-Canvas auf Three.js umgestellt: feste Kamera schräg von oben (55°),
+  Low-Poly-Tiere aus Grundformen mit Lauf-, Schwanz- und Flügelanimation, echte Schatten.
+- Pflanzen und Tiere zwischen Kamera und Spieler werden um ihn herum ausgeblendet
+  (Durchsicht-Kreis im Shader), damit man die Figur nie verliert.
+- Neues Futter, das nicht wegläuft: Nester (+ ca. 4 % Größe) und Aas (+ ca. 9 %).
+  Kreide-Eier sind blaugrün wie die nachgewiesenen Oviraptoriden-Eier.
+- Jäger laufen höchstens 93 % deines Tempos (`CONFIG.hunterSpeed`). Test: Postosuchus,
+  Allosaurus und T. rex jagen, der Abstand wächst um etwa 10 Einheiten pro Sekunde.
+- Leistung: 220–300 Zeichenaufrufe pro Bild. Bei unter 40 FPS schaltet das Spiel erst die
+  Schatten, dann die Auflösung herunter.
+- Gefundener Fehler: Die Spielfigur hatte kein `speed` in den Daten → Animation rechnete
+  mit NaN, Figur unsichtbar. Behoben mit Rückfall auf `CONFIG.playerSpeed`.
+
+Noch offen: menschlicher Spieltest am Handy (Spaß, Schwierigkeit, Bildrate) → Urteil
 PROCEED / PIVOT / KILL.
