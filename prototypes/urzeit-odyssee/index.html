@@ -892,7 +892,7 @@ const cutShader = sh => {
 const matC = new THREE.MeshLambertMaterial({ vertexColors: true }); matC.onBeforeCompile = cutShader;   // Tiere und Futter
 const matTree = new THREE.MeshLambertMaterial({ vertexColors: true }); matTree.onBeforeCompile = cutShader;
 const matPlayer = new THREE.MeshLambertMaterial({ vertexColors: true });
-const matWater = new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 80, specular: new THREE.Color(0x3a4a4a) });
+const matWater = new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 30, specular: new THREE.Color(0x101818) });
 const matWing = new THREE.MeshBasicMaterial({ color: col('#e6f6fa'), transparent: true, opacity: .4, depthWrite: false, side: THREE.DoubleSide });
 const matBlob = new THREE.MeshBasicMaterial({ color: col('#1a1006'), transparent: true, opacity: .2, depthWrite: false });
 const matRingOk = new THREE.MeshBasicMaterial({ color: col('#93e07f'), transparent: true, opacity: .9, depthWrite: false });
